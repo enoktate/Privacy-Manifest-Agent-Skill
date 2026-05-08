@@ -1,0 +1,7 @@
+interface:
+  display_name: "Apple Privacy Manifest"
+  short_description: "Audit Apple privacy manifests"
+  default_prompt: "Use $apple-privacy-manifest to audit this Apple platform project for required reason API usage and PrivacyInfo.xcprivacy coverage."
+
+policy:
+  allow_implicit_invocation: true
