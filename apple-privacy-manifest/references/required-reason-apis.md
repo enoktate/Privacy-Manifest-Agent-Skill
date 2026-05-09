@@ -30,13 +30,15 @@ Each dictionary has:
 </dict>
 ```
 
-## Categories And Common Reason Codes
+## Categories And Reason Codes
+
+Reason-code audit rule: for every required-reason API category, trace each API read through wrappers, helpers, storage, dictionaries, logs, analytics, request bodies, bug reports, UI display, SDK boundaries, and other sinks before accepting the declared reason code. Category coverage is not enough; every usage must match at least one declared reason code.
 
 ### File Timestamp
 
 Category: `NSPrivacyAccessedAPICategoryFileTimestamp`
 
-Common APIs/signals:
+APIs/signals:
 
 - `creationDate`
 - `modificationDate`
@@ -44,21 +46,27 @@ Common APIs/signals:
 - `contentModificationDateKey`
 - `creationDateKey`
 - `getattrlist()`
+- `getattrlistbulk()`
+- `fgetattrlist()`
 - `getattrlistat()`
+- `stat()`
+- `fstat()`
+- `fstatat()`
+- `lstat()`
 - file attributes that expose creation or modification timestamps
 
 Reason codes:
 
-- `DDA9.1`: Display timestamps to the user only; data stays on-device.
-- `C617.1`: Read metadata of files in the app container, app group, or CloudKit.
-- `3B52.1`: Read timestamps for files the user explicitly grants access to, such as document picker files.
-- `0A2A.1`: Third-party SDK wrapper around file timestamp APIs. SDKs only.
+- `DDA9.1`: Display file timestamps to the person using the device. File timestamp information, and information derived from it, may not be sent off-device.
+- `C617.1`: Access timestamps, size, or other metadata of files inside the app container, app group container, or the app's CloudKit container.
+- `3B52.1`: Access timestamps, size, or other metadata of files or directories the user specifically granted access to, such as through a document picker.
+- `0A2A.1`: Third-party SDK wrapper access to file timestamp APIs only when the app calls the wrapper. SDKs only; not for SDKs created primarily to wrap required-reason APIs. The SDK may not use the information for its own purposes or send it off-device.
 
 ### System Boot Time
 
 Category: `NSPrivacyAccessedAPICategorySystemBootTime`
 
-Common APIs/signals:
+APIs/signals:
 
 - `ProcessInfo.processInfo.systemUptime`
 - `systemUptime`
@@ -66,15 +74,15 @@ Common APIs/signals:
 
 Reason codes:
 
-- `35F9.1`: Measure elapsed time between in-app events; data stays on-device.
-- `8FFB.1`: Calculate absolute timestamps that may be sent off-device.
-- `3D61.1`: Include boot time in an optional user-submitted bug report.
+- `35F9.1`: Measure elapsed time between events that occur within the app or enable timers. System boot time and derived information may not be sent off-device, except elapsed time between in-app events may be sent off-device.
+- `8FFB.1`: Calculate absolute timestamps for events that occur within the app. Those absolute event timestamps may be sent off-device; system boot time itself and other derived information may not be sent off-device.
+- `3D61.1`: Include system boot time in an optional bug report the user chooses to submit. The system boot time information must be prominently displayed as part of the report.
 
 ### Disk Space
 
 Category: `NSPrivacyAccessedAPICategoryDiskSpace`
 
-Common APIs/signals:
+APIs/signals:
 
 - `volumeAvailableCapacityKey`
 - `volumeAvailableCapacityForImportantUsageKey`
@@ -83,34 +91,35 @@ Common APIs/signals:
 - `systemFreeSize`
 - `systemSize`
 - `statfs()`
+- `statvfs()`
 - related file system capacity calls
 
 Reason codes:
 
-- `85F4.1`: Display disk space information to the user.
-- `E174.1`: Check available space before writing files or trigger cleanup.
-- `7D9E.1`: Include disk space information in an optional user-submitted bug report.
-- `B728.1`: Health research apps detecting low disk space that affects data collection.
+- `85F4.1`: Display disk space information to the person using the device. Disk space information and derived information may not be sent off-device, except to another user-operated local-network device for display after explicit permission, and not over the Internet.
+- `E174.1`: Check whether there is enough disk space to write files, or whether disk space is low so the app can delete files. The app must behave differently based on disk space in a user-observable way. Disk space information and derived information may not be sent off-device, except to avoid downloading files from a server when disk space is insufficient.
+- `7D9E.1`: Include disk space information in an optional bug report the user chooses to submit. The disk space information must be prominently displayed in the report and may be sent off-device only after the user affirmatively submits that specific report.
+- `B728.1`: Health research apps detecting and informing participants about low disk space that impacts research data collection. The app must comply with App Store Review Guideline 5.1.3 and provide only health research participation functionality.
 
 ### Active Keyboards
 
 Category: `NSPrivacyAccessedAPICategoryActiveKeyboards`
 
-Common APIs/signals:
+APIs/signals:
 
 - `activeInputModes`
 - `UITextInputMode.activeInputModes`
 
 Reason codes:
 
-- `3EC4.1`: Custom keyboard app determines which keyboards are active.
-- `54BD.1`: App adapts UI based on active keyboard in a user-visible way.
+- `3EC4.1`: Custom keyboard app determines active keyboards on the device. Providing a systemwide custom keyboard must be the app's primary functionality. Active keyboard information and derived information may not be sent off-device.
+- `54BD.1`: Access active keyboard information to present a customized user interface to the person using the device. The app must have text fields for entering or editing text and must behave differently based on active keyboards in a user-observable way. Active keyboard information and derived information may not be sent off-device.
 
 ### User Defaults
 
 Category: `NSPrivacyAccessedAPICategoryUserDefaults`
 
-Common APIs/signals:
+APIs/signals:
 
 - `UserDefaults`
 - `NSUserDefaults`
@@ -119,10 +128,10 @@ Common APIs/signals:
 
 Reason codes:
 
-- `CA92.1`: Access user defaults from within the app itself.
-- `1C8F.1`: Access shared defaults from an app group container.
-- `C56D.1`: Third-party SDK accesses user defaults only when the app calls the SDK API.
-- `AC6B.1`: Health research app records measurements from a health research sensor.
+- `CA92.1`: Read and write user defaults information that is only accessible to the app itself. Does not permit reading information written by other apps or the system, or writing information other apps can access.
+- `1C8F.1`: Read and write user defaults information only accessible to apps, app extensions, and App Clips in the same App Group. Does not permit access outside the same App Group or system-written information, except the app is not responsible if the system returns global-domain information because a key is absent from the requested domain.
+- `C56D.1`: Third-party SDK wrapper access to user defaults only when the app calls the wrapper. SDKs only; not for SDKs created primarily to wrap required-reason APIs. The SDK may not use the information for its own purposes or send it off-device.
+- `AC6B.1`: Access user defaults to read `com.apple.configuration.managed` for MDM-managed app configuration, or set `com.apple.feedback.managed` for MDM-queryable feedback.
 
 ## Manifest Skeleton
 
@@ -178,6 +187,7 @@ For extensions, each extension target needs its own manifest if that binary uses
 ## Common Mistakes
 
 - Picking the broadest or most convenient reason code instead of the one that matches actual behavior.
+- Treating a declared category as sufficient without checking whether each usage matches the declared reason code.
 - Copying all five categories from an internet sample.
 - Declaring APIs that are not used, which misrepresents the app.
 - Forgetting app extension manifests.

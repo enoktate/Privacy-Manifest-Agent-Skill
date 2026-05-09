@@ -66,6 +66,7 @@ PATTERNS = {
         r"\bf_bavail\b",
         r"\bf_bfree\b",
         r"\bf_blocks\b",
+        r"\bstatvfs\s*\(",
     ],
     "NSPrivacyAccessedAPICategoryFileTimestamp": [
         r"\bNSFileCreationDate\b",
@@ -79,7 +80,12 @@ PATTERNS = {
         r"\bfileModificationDate\b",
         r"\bcontentModificationDateKey\b",
         r"\bcreationDateKey\b",
-        r"\bgetattrlist(?:at)?\s*\(",
+        r"\bgetattrlist(?:bulk|at)?\s*\(",
+        r"\bfgetattrlist\s*\(",
+        r"\bstat\s*\(",
+        r"\bfstat\s*\(",
+        r"\bfstatat\s*\(",
+        r"\blstat\s*\(",
         r"\battributesOfItem\s*\(",
     ],
     "NSPrivacyAccessedAPICategoryActiveKeyboards": [

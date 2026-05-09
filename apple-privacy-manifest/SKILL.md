@@ -20,7 +20,7 @@ compatibility: Designed for macOS-based Apple platform development. Uses Python 
 4. If the user has an App Store rejection, extract the exact ITMS code, named API/category, target/bundle, and SDK from the rejection text before proposing a fix.
 5. Identify every bundle that needs its own manifest. The app target, extensions, frameworks, dynamic libraries, and third-party SDKs that use required reason APIs may need separate `PrivacyInfo.xcprivacy` files.
 6. Verify placement, not just content. Inspect `.xcodeproj/project.pbxproj`, package manifests, podspecs, framework contents, and resource-copy phases where available. A manifest sitting in the project tree is ineffective unless it is included in the correct target resources or bundled inside the correct framework/SDK.
-7. Choose the narrowest accurate reason codes. Do not declare all categories as a hedge, and do not use SDK-only reason codes for app code.
+7. Choose the narrowest accurate reason codes. Do not stop at category coverage; trace each required-reason API read through wrappers, helpers, dictionaries, logs, analytics, request bodies, and other sinks until the actual product behavior matches the declared reason. Report reason-code mismatches even when the category is already declared.
 8. Edit manifests as property lists, preferably with `plistlib` or `plutil`. Keep `NSPrivacyAccessedAPITypes` as an array of dictionaries with exactly:
    - `NSPrivacyAccessedAPIType`
    - `NSPrivacyAccessedAPITypeReasons`
@@ -31,7 +31,7 @@ compatibility: Designed for macOS-based Apple platform development. Uses Python 
 - If code uses `UserDefaults` or `NSUserDefaults`, expect a `NSPrivacyAccessedAPICategoryUserDefaults` declaration unless the usage is removed or isolated in a third-party SDK manifest.
 - If code reads file creation or modification timestamps, expects `URLResourceKey` timestamp values, or calls timestamp-returning file attribute APIs, consider `NSPrivacyAccessedAPICategoryFileTimestamp`.
 - If code uses `mach_absolute_time()` or `ProcessInfo.processInfo.systemUptime`, consider `NSPrivacyAccessedAPICategorySystemBootTime`.
-- If code checks total, free, or available disk capacity before writes/downloads/cleanup, consider `NSPrivacyAccessedAPICategoryDiskSpace`.
+- If code checks total, free, or available disk capacity, consider `NSPrivacyAccessedAPICategoryDiskSpace`; then verify the declared reason code against the data flow and product behavior.
 - If code reads active keyboard/input modes, consider `NSPrivacyAccessedAPICategoryActiveKeyboards`.
 - For third-party SDKs, first update the SDK and inspect its bundled manifest. Copy SDK declarations into the app manifest only as a last-resort workaround when the packaging format fails to bundle a vendor manifest and the declarations accurately represent bundled code.
 - For app extensions, do not consolidate declarations into the app target. Widget, Share, Notification Service, Keyboard, and other extensions need manifests that reflect only their own binary behavior.
@@ -54,8 +54,9 @@ When auditing, return:
 - Existing manifest files found.
 - Targets/bundles that appear to need separate manifests, including app extensions and bundled SDKs.
 - Required reason API evidence with file and line references.
-- Missing, extra, or suspicious manifest declarations.
+- Missing, extra, suspicious, or mismatched manifest declarations.
 - Recommended `NSPrivacyAccessedAPITypes` entries by target/bundle, with reason-code rationale.
+- Reason-code mismatch findings, especially required-reason API values sent to analytics, logs, telemetry, request bodies, query parameters, crash reports, or support payloads.
 - Target membership or packaging risks that could make an otherwise correct manifest ineffective.
 - Xcode Privacy Report, build-log, or TestFlight validation evidence found; if unavailable, list them as remaining manual validation steps.
 - Open questions where the correct reason depends on product behavior, off-device transmission, user visibility, or SDK ownership.
