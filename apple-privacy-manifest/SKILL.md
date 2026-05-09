@@ -20,7 +20,7 @@ compatibility: Designed for macOS-based Apple platform development. Uses Python 
 4. If the user has an App Store rejection, extract the exact ITMS code, named API/category, target/bundle, and SDK from the rejection text before proposing a fix.
 5. Identify every bundle that needs its own manifest. The app target, extensions, frameworks, dynamic libraries, and third-party SDKs that use required reason APIs may need separate `PrivacyInfo.xcprivacy` files.
 6. Verify placement, not just content. Inspect `.xcodeproj/project.pbxproj`, package manifests, podspecs, framework contents, and resource-copy phases where available. A manifest sitting in the project tree is ineffective unless it is included in the correct target resources or bundled inside the correct framework/SDK.
-7. Choose the narrowest accurate reason codes. Do not stop at category coverage; trace each required-reason API read through wrappers, helpers, dictionaries, logs, analytics, request bodies, and other sinks until the actual product behavior matches the declared reason. Report reason-code mismatches even when the category is already declared.
+7. Choose the narrowest accurate reason codes. Do not stop at category coverage; trace each required-reason API read through wrappers, helpers, storage, dictionaries, logs, analytics, request bodies, bug reports, UI display, SDK boundaries, and other sinks until the actual product behavior matches the declared reason. Report reason-code mismatches even when the category is already declared.
 8. Edit manifests as property lists, preferably with `plistlib` or `plutil`. Keep `NSPrivacyAccessedAPITypes` as an array of dictionaries with exactly:
    - `NSPrivacyAccessedAPIType`
    - `NSPrivacyAccessedAPITypeReasons`

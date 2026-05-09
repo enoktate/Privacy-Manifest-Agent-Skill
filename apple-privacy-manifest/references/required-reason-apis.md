@@ -32,8 +32,6 @@ Each dictionary has:
 
 ## Categories And Reason Codes
 
-Reason-code audit rule: for every required-reason API category, trace each API read through wrappers, helpers, storage, dictionaries, logs, analytics, request bodies, bug reports, UI display, SDK boundaries, and other sinks before accepting the declared reason code. Category coverage is not enough; every usage must match at least one declared reason code.
-
 ### File Timestamp
 
 Category: `NSPrivacyAccessedAPICategoryFileTimestamp`
