@@ -30,6 +30,8 @@ Choose one installation method.
 npx skills add https://github.com/enoktate/Privacy-Manifest-Agent-Skill --skill apple-privacy-manifest
 ```
 
+For more information, visit the [skills.sh platform page](https://skills.sh/enoktate/privacy-manifest-agent-skill).
+
 ### Option B: Codex Manual Install
 
 Use this if you want to install the skill directly into Codex without using `skills.sh`.
