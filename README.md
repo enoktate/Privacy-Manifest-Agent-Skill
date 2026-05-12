@@ -34,18 +34,18 @@ For more information, visit the [skills.sh platform page](https://skills.sh/enok
 
 ### Option B: Codex Manual Install
 
-Use this if you want to install the skill directly into Codex without using `skills.sh`.
+Installs the skill for all Codex projects on this Mac.
 
 ```bash
 git clone https://github.com/enoktate/Privacy-Manifest-Agent-Skill.git
 cd Privacy-Manifest-Agent-Skill
-mkdir -p ~/.codex/skills
-cp -R apple-privacy-manifest ~/.codex/skills/
+mkdir -p ~/.agents/skills
+cp -R apple-privacy-manifest ~/.agents/skills/
 ```
 
 ### Option C: Claude Code Manual Install
 
-Use this if you want to install the skill directly into Claude Code without using `skills.sh`.
+Installs the skill for all Claude Code projects on this Mac.
 
 ```bash
 git clone https://github.com/enoktate/Privacy-Manifest-Agent-Skill.git
@@ -54,7 +54,14 @@ mkdir -p ~/.claude/skills
 cp -R apple-privacy-manifest ~/.claude/skills/
 ```
 
-After a manual install, start a new Codex or Claude Code session so the agent can discover the skill.
+### Project-Local Install
+
+To install the skill only for one project, copy `apple-privacy-manifest` into that project's skill folder:
+
+- Codex: `.agents/skills/apple-privacy-manifest`
+- Claude Code: `.claude/skills/apple-privacy-manifest`
+
+If the skill does not appear after a manual install, restart the agent session.
 
 ## Usage
 
